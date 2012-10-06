@@ -1,0 +1,296 @@
+
+body {
+  background-color: #272a0f;
+  color: #2a1911;
+}
+
+.form-submit {
+  background-color: #dfdb92;
+}
+
+table th {
+  color: #272a0f;
+}
+
+table td {
+  color: #63591b;
+}
+
+.stack-header-inner {
+  background-color: #ffffff;
+}
+
+.wrapper-content {
+  background-color: #ffffff;
+}
+
+.wrapper-footer {
+  background-color: #ffffff;
+}
+
+.menu-dropdown .menu .menu {
+  background-color: #646a2c;
+}
+
+.menu-dropdown .menu .menu .last > a {
+  border-bottom-color: #dfdb92;
+}
+
+.stack-navigation .inset-3 {
+  background-color: #646a2c;
+}
+
+.stack-navigation .inset-4 {
+  border-color: #dfdb92;
+}
+
+.stack-navigation .menu li a {
+  color: #dfdb92;
+}
+
+.col.last h2 {
+  background-color: transparent;
+}
+
+.col:first-child h2,.sidebar.left h2 {
+  background-color: transparent;
+}
+
+.breadcrumb {
+  color: #bbab56;
+}
+
+.messages a {
+  color: #63591b;
+}
+
+#block-feedback-feedback a {
+  background-color: #646a2c;
+  color: #ffffff;
+  border-color: #ffffff;
+}
+
+.sidebar .block-node .delete a {
+  border-color: #2a1911;
+}
+
+.wrapper-content .stack-precontent .block h2 {
+  background-color: transparent;
+}
+
+.col + .col h2.customer-header {
+  background-color: transparent;
+}
+
+.header .inset-1 {
+  background-color: #ffffff;
+}
+
+.sidebar.left + .sidebar.left h2.customer-header {
+  background-color: transparent;
+}
+
+#block-feedback-feedback a:hover {
+  background-color: #63591b;
+}
+
+.controls.buttons a.activeSlide {
+  background-color: #646a2c;
+}
+
+.form-submit + input {
+  background-color: #ffffff;
+}
+
+a,blockquote {
+  color: #63591b;
+}
+
+a:hover {
+  color: #bbab56;
+}
+
+li a.active {
+  color: #bbab56;
+}
+
+h1 {
+  color: #2a1911;
+}
+
+.stack-preheader a {
+  color: #ffffff;
+}
+
+.stack-navigation .menu li a:hover {
+  color: #ffffff;
+}
+
+.stack-navigation .menu li a.active {
+  color: #ffffff;
+}
+
+table a {
+  color: #63591b;
+}
+
+.page-forum .title {
+  color: #272a0f;
+}
+
+table th a {
+  color: #272a0f;
+}
+
+.forum a {
+  color: #272a0f;
+}
+
+.forum .replies a {
+  color: #272a0f;
+}
+
+.rotating-banner {
+  color: #272a0f;
+}
+
+.menu-dropdown .menu .expanded:hover > a {
+  color: #ffffff;
+}
+
+.menu-dropdown .menu .active-trail > a {
+  color: #ffffff;
+}
+
+.menu-dropdown .menu .active-trail:hover > a {
+  color: #ffffff;
+}
+
+.menu-dropdown .menu .menu li:hover > a {
+  color: #ffffff;
+}
+
+.menu-dropdown .menu .menu a.active {
+  color: #bbab56;
+}
+
+.menu-dropdown .menu .menu li:hover > a.active {
+  color: #ffffff;
+}
+
+.menu-dropdown .menu .menu .active-trail > a {
+  color: #bbab56;
+}
+
+.menu-dropdown .menu .menu .active-trail:hover > a {
+  color: #ffffff;
+}
+
+h3,h4,h5 {
+  border-bottom-color: #dfdb92;
+}
+
+.comment-wrapper .comment + .comment {
+  border-color: #dfdb92;
+}
+
+.col:first-child h2 {
+  background-color: transparent;
+}
+
+
+#banner-region .rb-textbox-type-header a {
+  background-color: transparent;
+  color: #f4f3db;
+}
+
+#header-inner {
+  border-color: transparent;
+}
+
+#main .content h2 {
+  border-color: #ccceb9;
+}
+
+#sidebar-a {
+  border-color: transparent;
+}
+
+#banner-region .rb-textbox-type-text a {
+  background-color: transparent;
+  color: #f4f3db;
+}
+
+#content {
+  border-color: transparent;
+}
+
+#sidebar-a #edit-submit {
+  background-color: #2a1911;
+  color: #f4f3db;
+}
+
+#sidebar-a #edit-submit--2 {
+  background-color: #272a0f;
+  color: #ffffff;
+}
+
+#sidebar-a a img {
+  border-color: #ffffff;
+}
+
+#sidebar-b {
+  border-color: transparent;
+}
+
+#main {
+  border-color: transparent;
+}
+
+#main .content h2:last-child {
+  border-color: #b9b3b0;
+}
+
+#banner-region h2 {
+  background-color: #b9b3b0;
+  color: #e9e3c7;
+}
+
+#banner-region #rotating-banner-1 {
+  background-color: #ffffff;
+}
+
+#navigation-region .level-1 a {
+  color: #f4f3db;
+}
+
+#banner-region #rotating-banner-1 .buttons {
+  background-color: #ffffff;
+}
+
+#sidebar-a h2 {
+  color: #ffffff;
+}
+
+#preheader-second-region .level-1 a {
+  color: #6e705e;
+}
+
+#preheader-second-region .level-1 .active {
+  color: #272a0f;
+}
+
+#navigation .box {
+  background-color: #6e705e;
+  color: #eae7b6;
+  border-color: #706560;
+}
+
+#header {
+  background-color: #ffffff;
+}
+
+#content #banner #banner-region .static-wrapper #rotating-banner-1 .buttons {
+  background-color: #ffffff;
+}
+

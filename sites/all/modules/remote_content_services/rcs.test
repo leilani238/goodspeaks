@@ -1,0 +1,220 @@
+<?php
+
+/**
+ * @file
+ * Tests for remote content services.
+ */
+
+class RCSTest extends DrupalWebTestCase {
+  public static function getInfo() {
+    return array(
+      'name' => t('Remote content services tests'),
+      'description' => t('Tests oAuth login and access to remote content services.'),
+      'group' => t('Remote content services'),
+    );
+  }
+
+  function setUp() {
+    $modules = array('rcs');
+    parent::setUp($modules);
+
+    $this->endUser = $this->drupalCreateUser(array('create article content', 'oauth authorize any consumers'));
+
+    // Create an administrative user who owns a consumer API key and secret.
+    $this->consumerOwner = $this->drupalCreateUser(array());
+    $options = array(
+      'callback_url' => 'oob', // In real life, this would be the mobile app.
+      'uid' => $this->consumerOwner->uid,
+      'provider_consumer' => TRUE,
+      'in_database' => TRUE,
+      'context' => 'remote_content_services',
+    );
+    $this->consumer = new DrupalOAuthConsumer(user_password(32), user_password(32), $options);
+    $this->consumer->write();
+
+    $this->signatureMethod = new OAuthSignatureMethod_HMAC('SHA1');
+
+    $this->accessToken = $this->getAccessToken($this->endUser);
+  }
+
+  /**
+   * Helper function; returns an oAuth access token.
+   *
+   * @param $user
+   *   The user for which to create the token.
+   *
+   * @return DrupalOAuthToken
+   *   A valid oAuth access token.
+   */
+  function getAccessToken($user) {
+    // Log in as the end user who will authorize the mobile app.
+    $this->drupalLogin($user);
+
+    // Get a request token (first step in oAuth).
+    $request = OAuthRequest::from_consumer_and_token($this->consumer, NULL, 'GET', $this->getAbsoluteUrl('/oauth/request_token'));
+    $request->sign_request($this->signatureMethod, $this->consumer, NULL);
+    $requestURL = $request->to_url();
+
+    $result = $this->drupalGet($requestURL);
+    $this->assertResponse('200');
+    parse_str($result, $request_token_parameters);
+
+    // Authorize the application (second step in oAuth).
+    $request_token = new DrupalOAuthToken($request_token_parameters['oauth_token'], $request_token_parameters['oauth_token_secret'], $this->consumer);
+    $request = OAuthRequest::from_consumer_and_token($this->consumer, $request_token, 'GET', $this->getAbsoluteUrl('/oauth/authorize'));
+    $request->sign_request($this->signatureMethod, $this->consumer, $request_token);
+    $requestURL = $request->to_url();
+    // We need to follow the redirect after authorizing, so we use curlExec()
+    // here, which lets us specify our own options (including FOLLOWLOCATION).
+    $out = $this->curlExec(array(
+      CURLOPT_HTTPGET => TRUE,
+      CURLOPT_URL => $requestURL,
+      CURLOPT_NOBODY => FALSE,
+      CURLOPT_HTTPHEADER => array(),
+      // Because we specified automatic_authorization in the default oAuth
+      // context (see rcs_default_oauth_common_context()), all we need to do is
+      // follow the redirect specified in the consumer. If we hadn't specified
+      // automatic_authorization, we would need to find the "Grant access"
+      // button on /oauth/authorize and use it to submit the form.
+      CURLOPT_FOLLOWLOCATION => TRUE,
+    ));
+    // Ensure that any changes to variables in the other thread are picked up.
+    $this->refreshVariables();
+    $this->verbose('<pre>' . $out . '</pre>');
+
+    // Now that the end user has authorized us, we can get an access token
+    // (third step in oAuth).
+    $request = OAuthRequest::from_consumer_and_token($this->consumer, $request_token, 'GET', $this->getAbsoluteUrl('/oauth/access_token'));
+    $request->sign_request($this->signatureMethod, $this->consumer, $request_token);
+    $requestURL = $request->to_url();
+    $result = $this->drupalGet($requestURL);
+    $this->assertResponse('200');
+    parse_str($result, $access_token_parameters);
+
+    $access_token = new DrupalOAuthToken($access_token_parameters['oauth_token'], $access_token_parameters['oauth_token_secret'], $this->consumer);
+
+    // Log out, to avoid any confusion about whether we're accessing things
+    // via the session instead of via oAuth.
+    $this->drupalLogout();
+
+    return $access_token;
+  }
+
+  /**
+   * Tests that the field listing exists and can be accessed.
+   */
+  function testIndex() {
+    // Try to retrieve the page without an oAuth access token.
+    $this->drupalGet('/content-types/fields');
+    $this->assertResponse('401');
+    // Retrieve the page with an authorized access token.
+    $this->oAuthGet('/content-types/fields');
+    $this->assertResponse('200');
+  }
+
+  /**
+   * Helper function for making a GET request using an access token.
+   *
+   * @param $path
+   *   The path to be requested, relative to the Drupal root.
+   */
+  function oAuthGet($path) {
+    $request = OAuthRequest::from_consumer_and_token($this->consumer, $this->accessToken, 'GET', $this->getAbsoluteUrl($path), NULL);
+    $request->sign_request($this->signatureMethod, $this->consumer, $this->accessToken);
+    $requestURL = $request->to_url();
+
+    $out = $this->curlExec(array(
+      CURLOPT_HTTPGET => TRUE,
+      CURLOPT_URL => $requestURL,
+      CURLOPT_NOBODY => FALSE,
+      CURLOPT_HTTPHEADER => array(),
+    ));
+    // Ensure that any changes to variables in the other thread are picked up.
+    $this->refreshVariables();
+    $this->verbose('<pre>' . $out . '</pre>');
+    return $out;
+  }
+
+  /**
+   * Helper function for making a POST request using an access token.
+   *
+   * @param $path
+   *   The path to be requested, relative to the Drupal root.
+   * @param $data
+   *   An array of POST data, appropriate for http_build_query().
+   * @param $options
+   *   Optional. An associative array of cURL options.
+   *
+   * @return
+   *   The result of the cURL request.
+   */
+  function oAuthPost($path, $data, $options = array()) {
+    $request = OAuthRequest::from_consumer_and_token($this->consumer, $this->accessToken, 'POST', $this->getAbsoluteUrl($path), $data);
+    $request->sign_request($this->signatureMethod, $this->consumer, $this->accessToken);
+
+    $defaults = array(
+      CURLOPT_URL => $request->to_url(),
+      CURLOPT_POST => TRUE,
+      CURLOPT_POSTFIELDS => http_build_query($request->get_parameters(), '', '&'),
+    );
+    $options = $defaults + $options;
+    $out = $this->curlExec($options);
+    // Ensure that any changes to variables in the other thread are picked up.
+    $this->refreshVariables();
+    $this->verbose('<pre>' . $out . '</pre>');
+    return $out;
+  }
+
+  /**
+   * Helper function for making a PUT request using an access token.
+   *
+   * @param $path
+   *   The path to be requested, relative to the Drupal root.
+   * @param $data
+   *   The data to be put.
+   *
+   * @return
+   *   The result of the cURL request.
+   */
+  function oAuthPut($path, $data) {
+    $request = OAuthRequest::from_consumer_and_token($this->consumer, $this->accessToken, 'PUT', $this->getAbsoluteUrl($path), $data);
+    $request->sign_request($this->signatureMethod, $this->consumer, $this->accessToken);
+    $options = array(
+      CURLOPT_CUSTOMREQUEST => 'PUT',
+      CURLOPT_URL => $request->to_url(),
+      CURLOPT_POST => FALSE,
+      CURLOPT_POSTFIELDS => http_build_query($request->get_parameters(), '', '&'),
+    );
+    $out = $this->curlExec($options);
+    // Ensure that any changes to variables in the other thread are picked up.
+    $this->refreshVariables();
+    $this->verbose('<pre>' . $out . '</pre>');
+    return $out;
+  }
+
+  /**
+   * Helper function for making a DELETE request using an access token.
+   *
+   * @param $path
+   *   The path to be requested, relative to the Drupal root.
+   *
+   * @return
+   *   The result of the cURL request.
+   */
+  function oAuthDelete($path) {
+    $request = OAuthRequest::from_consumer_and_token($this->consumer, $this->accessToken, 'DELETE', $this->getAbsoluteUrl($path), NULL);
+    $request->sign_request($this->signatureMethod, $this->consumer, $this->accessToken);
+    $requestURL = $request->to_url();
+
+    $out = $this->curlExec(array(
+      CURLOPT_CUSTOMREQUEST => 'DELETE',
+      CURLOPT_URL => $requestURL,
+      CURLOPT_NOBODY => FALSE,
+      CURLOPT_HTTPHEADER => array(),
+    ));
+    // Ensure that any changes to variables in the other thread are picked up.
+    $this->refreshVariables();
+    $this->verbose('<pre>' . $out . '</pre>');
+    return $out;
+  }
+}

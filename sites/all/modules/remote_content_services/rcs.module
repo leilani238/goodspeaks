@@ -1,0 +1,301 @@
+<?php
+
+/**
+ * Implements hook_boot().
+ */
+function rcs_init() {
+  rcsFactory::registry();
+}
+
+/**
+ * Implements hook_menu().
+ */
+function rcs_menu() {
+}
+
+/**
+ * QUESTIONABLE
+ * Helper function to retrieve allowed options for a field.
+ *
+ * @param Array $field
+ *  A field definition.
+ */
+function rcs_field_options($field) {
+  switch ($field['type']) {
+    case 'taxonomy_term_reference':
+      $vocabulary = taxonomy_vocabulary_machine_name_load($field['settings']['allowed_values'][0]['vocabulary']);
+      $options = db_query('SELECT vid, name FROM {taxonomy_term_data} WHERE vid = :vid', array(':vid' => $vocabulary->vid))->fetchAll();
+      return $options;
+    case 'list_text':
+    case 'list_integer':
+    case 'list_float':
+      return $field['settings']['allowed_values'];
+  }
+}
+
+/**
+ * QUESTIONABLE
+ * Helper function to retrieve settings for a field.
+ *
+ * @param Array $field
+ *  A field definition.
+ */
+function rcs_field_settings($field) {
+  switch ($field['type']) {
+    case 'media':
+      return array('max_upload_size' => file_upload_max_size());
+      break;
+  }
+}
+
+/**
+ * GOOD
+ * Implements hook_form_FORM_ID_alter().
+ * Add a webservice setting to the node type form.
+ * @todo we should deem whether or not this content type as a whole is elligible for services.
+ * @todo what if they change the machine name?
+ */
+function rcs_form_node_type_form_alter(&$form, &$form_state, $form_id) {
+  //$eligible_types = rcs_get_types();
+
+  //if (array_key_exists($form['type']['#default_value'], $eligible_types)) {
+    $form['#submit'][] = 'rcs_enable_web_services';
+  
+    $form['web_services'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Web Services'),
+      '#description' => t('Expose this content type to a remote app.'),
+      '#collapsible' => TRUE,
+      '#collapsed' => TRUE,
+      '#tree' => TRUE,
+      '#group' => 'additional_settings',
+    );
+  
+    $enabled = rcs_services_enabled('node', $form['type']['#default_value']);
+  
+    $form['web_services']['enable'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Enable services'),
+      '#description' => t('Allow remote content entry for authorized users.'),
+      '#default_value' => $enabled,
+    );
+  //}
+}
+
+/**
+ * GOOD
+ * Submit handler for node_type_form.
+ * Track webservice setting.
+ */
+function rcs_enable_web_services($form, &$form_state) {
+  $value = variable_get('rcs_services_enabled', array());
+  $value['node'][$form_state['values']['type']] = $form_state['values']['web_services']['enable'] ? TRUE : FALSE;
+  variable_set('rcs_services_enabled', $value);
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ *
+ * Disables field editing for mobile enabled content types.
+ */
+function rcs_form_field_ui_field_overview_form_alter(&$form, &$form_state) {
+  if (rcs_services_enabled($form['#entity_type'], $form['#bundle'])) {
+    $link = l(t('Edit content type settings.'), 'admin/structure/types/manage/' . $form['#bundle']);
+    $message = t('This content type is mobile enabled and fields cannot be modified.');
+    drupal_set_message($message . ' ' . $link, 'warning');
+
+    foreach ($form['#fields'] as $field_name) {
+      foreach (array('widget_type', 'edit', 'delete') as $action) {
+        $title = $form['fields'][$field_name][$action]['#title'];
+        $form['fields'][$field_name][$action] = array(
+          '#type' => 'markup',
+          '#markup' => '<span title="' . $message . '">' . $title . '</span>',
+        );
+      }
+    }
+    // TODO: Remove these rows entirely. Right now they're still being themed.
+    $form['fields']['_add_new_field']['#access'] = FALSE;
+    $form['fields']['_add_existing_field']['#access'] = FALSE;
+  }
+}
+
+/**
+ * Helper function to determine whether or not a content type is
+ * services enabled or not.
+ * 
+ * @param String $type
+ *  The machine name of the content type.
+ */
+function rcs_services_enabled($type, $bundle) {
+  $value = variable_get('rcs_services_enabled', array());
+  return $value[$type][$bundle];
+}
+
+/**
+ * Implements hook_rcs_classes().
+ */
+function rcs_rcs_classes() {
+  return array(
+    'entities' => array(
+      'node' => 'rcsEntityNode',
+    ),
+    'fields' => array(
+      'textfield' => 'rcsFieldStandard',
+      '*' => 'rcsFieldStandard',
+    ),
+  );
+}
+
+///////////////////////////////////////////////////////////
+// Begin Default Services Code ////////////////////////////
+///////////////////////////////////////////////////////////
+
+/**
+ * Implements hook_default_services_endpoint().
+ */
+function rcs_default_services_endpoint() {
+  $endpoints = array();
+  $endpoint = new stdClass;
+  $endpoint->disabled = FALSE; /* Edit this to true to make a default endpoint disabled initially */
+  $endpoint->api_version = 3;
+  $endpoint->name = 'rcs_content_types';
+  $endpoint->server = 'rest_server';
+  $endpoint->path = 'content-types';
+  $endpoint->authentication = array(
+    'services_oauth' => array(
+      'oauth_context' => 'remote_content_services',
+      'oauth_type' => 'three-legged',
+    ),
+  );
+  $endpoint->server_settings = array(
+    'rest_server' => array(
+      'formatters' => array(
+        'json' => TRUE,
+        'xml' => TRUE,
+        'bencode' => FALSE,
+        'jsonp' => FALSE,
+        'php' => FALSE,
+        'rss' => FALSE,
+        'yaml' => FALSE,
+      ),
+      'parsers' => array(
+        'application/json' => TRUE,
+        'application/x-www-form-urlencoded' => TRUE,
+        'multipart/form-data' => TRUE,
+        'application/vnd.php.serialized' => FALSE,
+        'application/x-yaml' => FALSE,
+      ),
+    ),
+  );
+  $endpoint->resources = array(
+    'fields' => array(
+      'operations' => array(
+        'index' => array(
+          'enabled' => 1,
+        ),
+      ),
+    ),
+  );
+  $endpoint->debug = 0;
+  $endpoints['rcs_content_types_endpoint'] = $endpoint;
+  return $endpoints;
+}
+
+/**
+ * Implements hook_ctools_plugin_api().
+ */
+function rcs_ctools_plugin_api() {
+  list($module, $api) = func_get_args();
+  if ($module == "oauth_common" && $api == "oauth") {
+    return array("version" => 1);
+  }
+  if ($module == "services" && $api == "services") {
+    return array("version" => 3);
+  }
+}
+
+/**
+ * Implements hook_services_resources().
+ * Provide resources for content type information.
+ */
+function rcs_services_resources() {
+  return array(
+    'fields' => array(
+      'index' => array(
+        'help' => 'Retrieves a listing of eligible content types',
+        'callback' => '_rcs_content_type_index',
+        'access callback' => 'user_access',
+        'access arguments' => array('access content'),
+        'access arguments append' => FALSE,
+        //'args' => array(array(
+//          array(
+//            'name' => 'parameters',
+//            'type' => 'array',
+//            'description' => '',
+//            'source' => 'param',
+//            'optional' => TRUE,
+//            'default value' => array(),
+          //),
+        //),
+      ),
+    ),
+  );
+}
+
+/**
+ * Create an endpoint to retrieve content type information.
+ */
+function _rcs_content_type_index() {
+  $classes = rcsFactory::registry();
+
+  $enabled_types = variable_get('rcs_services_enabled', array());
+  $allowed_types = array();
+
+  foreach ($enabled_types as $entity_type => $bundles) {
+    foreach ($bundles as $bundle_name => $enabled) {
+      if ($enabled) {
+        $c = rcsFactory::createEntity($entity_type, array('type' => $bundle_name));
+        $allowed_types[$entity_type][$bundle_name] = $c->getFields();
+      }
+    }
+  }
+  return $allowed_types;
+}
+
+/**
+ * Implements hook_default_oauth_common_context().
+ */
+function rcs_default_oauth_common_context() {
+  $contexts = array();
+
+  // Note: The authorization_options below include an 'automatic_authorization'
+  // key that will disappear if you edit via the UI and re-export. Make sure
+  // to add it back in after exporting.
+  $context = new stdClass;
+  $context->disabled = FALSE; /* Edit this to true to make a default context disabled initially */
+  $context->api_version = 1;
+  $context->name = 'remote_content_services';
+  $context->title = 'Remote content services';
+  $context->authorization_options = array(
+    'automatic_authorization' => TRUE,
+    'access_token_lifetime' => NULL,
+    'signature_methods' => array(
+      0 => 'HMAC-SHA1',
+    ),
+    'default_authorization_levels' => array(
+      0 => '*',
+    ),
+  );
+  $context->authorization_levels = array(
+    '*' => array(
+      'name' => '*',
+      'title' => 'All permissions',
+      'default' => 1,
+      'delete' => 0,
+      'description' => 'Gives the mobile app the same permissions you have on the regular site.',
+    ),
+  );
+  $contexts['rcs'] = $context;
+
+  return $contexts;
+}

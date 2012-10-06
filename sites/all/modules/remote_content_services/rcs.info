@@ -1,0 +1,11 @@
+name = Remote Content Services API
+description = Provide service endpoints for content authoring.
+core = 7.x
+
+dependencies[] = oauth_common
+dependencies[] = services
+dependencies[] = rest_server
+dependencies[] = services_oauth
+
+files[] = rcs.class.inc
+files[] = rcs.test

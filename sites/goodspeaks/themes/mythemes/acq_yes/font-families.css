@@ -1,0 +1,24 @@
+@font-face {
+  font-family: 'ChunkFive';
+  src: url('fonts/ChunkFive/Chunkfive.eot');
+  src: local('ChunkFive'), url('fonts/ChunkFive/Chunkfive.woff') format('woff'),
+   url('fonts/ChunkFive/Chunkfive.ttf') format('truetype'),
+   url('fonts/ChunkFive/Chunkfive.svg') format('svg');
+}
+
+@font-face {
+  font-family: 'CartoGothic';
+  src: url('fonts/CartoGothic/CartoGothicStd-Book.eot');
+  src: local('CartoGothic Std'), local('CartoGothicStd-Book'), url('fonts/CartoGothic/CartoGothicStd-Book.woff') format('woff'),
+   url('fonts/CartoGothic/CartoGothicStd-Book.ttf') format('truetype'),
+   url('fonts/CartoGothic/CartoGothicStd-Book.svg') format('svg');
+}
+
+@font-face {
+  font-family: 'CartoGothic Italic';
+  src: url('fonts/CartoGothic%20Italic/CartoGothicStd-Italic.eot');
+  src: local('CartoGothicStd-Italic'), url('fonts/CartoGothic%20Italic/CartoGothicStd-Italic.woff') format('woff'),
+   url('fonts/CartoGothic%20Italic/CartoGothicStd-Italic.ttf') format('truetype'),
+   url('fonts/CartoGothic%20Italic/CartoGothicStd-Italic.svg') format('svg');
+}
+

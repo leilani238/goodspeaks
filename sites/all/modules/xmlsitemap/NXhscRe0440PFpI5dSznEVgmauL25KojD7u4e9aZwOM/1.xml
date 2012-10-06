@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="/sitemap.xsl"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<url><loc>http://www.goodspeaks.org/</loc><changefreq>daily</changefreq><priority>1.0</priority></url>
+<url><loc>http://www.goodspeaks.org/news-outlook</loc></url>
+<url><loc>http://www.goodspeaks.org/content/homepage-design-choices</loc><lastmod>2011-05-26T17:32Z</lastmod><changefreq>yearly</changefreq></url>
+<url><loc>http://www.goodspeaks.org/content/nonprofit-news-calendar-crisis-watch</loc></url>
+<url><loc>http://www.goodspeaks.org/resources</loc></url>
+<url><loc>http://www.goodspeaks.org/gallery-collections/galleries</loc></url>
+<url><loc>http://www.goodspeaks.org/content/nonprofit-charity-ngo-video-for-change-distribution-key</loc><lastmod>2012-07-23T16:42Z</lastmod><changefreq>hourly</changefreq></url>
+</urlset>

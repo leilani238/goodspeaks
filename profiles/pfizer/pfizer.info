@@ -1,0 +1,17 @@
+name = Pfizer
+description = Contains features and modules only intended for use by Pfizer
+core = 7.x
+distribution_name = Drupal Gardens
+; This profile should never be installed as a base profile: we allow the gardens 
+; profile to be installed fully first before switching to this one where needed.
+hidden=TRUE
+
+; Default custom modules.
+dependencies[] = webform_ssl
+dependencies[] = metatag
+dependencies[] = metatag_opengraph
+dependencies[] = metatag_ui
+dependencies[] = javascript_libraries
+dependencies[] = domain_301_redirect
+dependencies[] = follow
+

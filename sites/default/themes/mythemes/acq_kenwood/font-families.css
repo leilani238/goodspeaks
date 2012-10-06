@@ -1,0 +1,16 @@
+@font-face {
+  font-family: 'Titillium Text 999';
+  src: url('fonts/Titillium%20Text%20999/TitilliumText999wt.eot');
+  src: local('TitilliumText14L-999wt'), url('fonts/Titillium%20Text%20999/TitilliumText999wt.woff') format('woff'),
+   url('fonts/Titillium%20Text%20999/TitilliumText999wt.ttf') format('truetype'),
+   url('fonts/Titillium%20Text%20999/TitilliumText999wt.svg') format('svg');
+}
+
+@font-face {
+  font-family: 'CartoGothic';
+  src: url('fonts/CartoGothic/CartoGothicStd-Book.eot');
+  src: local('CartoGothic Std'), local('CartoGothicStd-Book'), url('fonts/CartoGothic/CartoGothicStd-Book.woff') format('woff'),
+   url('fonts/CartoGothic/CartoGothicStd-Book.ttf') format('truetype'),
+   url('fonts/CartoGothic/CartoGothicStd-Book.svg') format('svg');
+}
+

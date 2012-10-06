@@ -1,0 +1,158 @@
+body, #navigation-region {
+    width: 100%;
+}
+.page-width {
+}
+#banner {
+}
+#sidebar-a {
+}
+#sidebar-b {
+}
+.node-readmore a {
+    display: none;
+}
+.rb-textbox-wrapper {
+    background-color: grey;
+    height: 20px;
+    opacity: 0.86;
+    width: 650px;
+}
+.front .media-collection-item-wrapper {
+    height: 225px;
+    width: 225px;
+}
+.front #banner .block {
+    clear: none;
+    float: left;
+}
+.front #block-rotating-banner-1 {
+    height: 350px;
+    width: 730px;
+}
+#banner-region h2 {
+    border-radius: 8px 8px 8px 8px;
+}
+#banner-region #rotating-banner-1 .rb-slides {
+    border-radius: 8px 8px 8px 8px;
+}
+#content-top .view-gallery-teasers .media-thumbnail-frame img {
+    border-radius: 8px 8px 8px 8px;
+}
+#header-region #logo img {
+    float: left;
+    position: relative;
+    top: -9px;
+}
+#header-region ul {
+    float: right;
+    position: relative;
+    top: 50px;
+}
+#header ul li {
+    display: inline;
+    margin-right: 1em;
+}
+#block-block-96 {
+    float: right;
+    position: relative;
+    right: -190px;
+    top: -33px;
+}
+#block-views-news-outlook-block {
+    margin-left: -35px;
+    position: relative;
+    right: -670px;
+    top: -200px;
+}
+#banner-region .view-news-outlook .views-field {
+    width: 300px;
+}
+.front #banner-region .block h2 {
+    left: -1px;
+}
+#block-block-101 {
+    float: right;
+    position: relative;
+}
+#mc-embedded-subscribe {
+    position: relative;
+    top: -50px;
+}
+.front #mc-embedded-subscribe {
+    position: relative;
+    top: 0;
+}
+.front #edit-search-block-form--2 {
+    width: 100%;
+}
+#edit-search-block-form--2 {
+    width: 70%;
+}
+#block-block-111 {
+    left: -60px;
+    position: relative;
+    top: -200px;
+}
+#header-region .media-thumbnail-frame {
+    bottom: 30px;
+    left: -400px;
+    position: relative;
+    width: 40px;
+}
+.media-gallery-detail {
+    float: none;
+}
+#header-inner .col-c {
+    height: 80px;
+}
+.front #block-views-gallery-teasers-block-1 h2 {
+    position: relative;
+    top: -30px;
+}
+.front #content-top .middle {
+    clear: both;
+    position: relative;
+    top: -150px;
+}
+.front #main {
+    position: relative;
+    top: -164px;
+}
+.front #sidebar-a {
+    position: relative;
+    top: -160px;
+}
+#sidebar-a h2 {
+    left: 1px;
+    top: -20px;
+}
+.front #sidebar-a h2 {
+    left: -22px;
+    top: -10px;
+}
+.view-news-outlook .field-content a {
+    text-decoration: none;
+}
+.view-gallery-teasers .field-content a:hover {
+    text-decoration: none;
+}
+.front #banner-region .styles .media-thumbnail-frame {
+    left: 2px;
+    position: relative;
+    top: -5px;
+}
+#banner-region #rotating-banner-11 {
+    left: 10px;
+    position: relative;
+    top: -70px;
+}
+#banner-region .styles .media-thumbnail-frame {
+    left: 100px;
+    position: relative;
+    top: -50px;
+}
+.front #content #main {
+    position: relative;
+    top: -152px;
+}

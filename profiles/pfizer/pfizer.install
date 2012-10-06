@@ -1,0 +1,27 @@
+<?php
+
+/**
+ * Implements hook_install().
+ */
+function pfizer_install() {
+  // Enable SSL for all authenticated users.
+  pfizer_securepages_authenticated();
+  // Set the customer-specific GA code.
+  variable_set('gardens_misc_ga_tracking_code', 'UA-33562659-1');
+}
+
+/**
+ * Enable SSL for all authenticated users
+ */
+function pfizer_securepages_authenticated() {
+  $roles = variable_get('securepages_roles', array());
+  $roles[DRUPAL_AUTHENTICATED_RID] = DRUPAL_AUTHENTICATED_RID;
+  variable_set('securepages_roles', $roles);
+  $pages = explode("\n", variable_get('securepages_pages', ''));
+  $pages = array_filter(array_map('trim', array_unique(array_merge($pages, array('gardens-login', 'openid/authenticate', 'user', 'user/login', 'user/register')))));
+  variable_set('securepages_pages', implode("\n", $pages));
+  $ignore = explode("\n", variable_get('securepages_ignore', ''));
+  $ignore = array_diff($ignore, array('user', 'user/login', 'user/register'));
+  $ignore = array_filter(array_map('trim', array_unique(array_merge($ignore, array('gardener/login', 'gardener/register', 'user/logout')))));
+  variable_set('securepages_ignore', implode("\n", $ignore));
+}
